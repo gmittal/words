@@ -1,11 +1,35 @@
 html, body{ margin:0px 0px; width: 100%;}
 
+@font-face {
+    font-family: 'Academic';
+    src: url('/fonts/Neue Haas Grotesk Display/MIT.ttf');
+}
+
+@font-face {
+    font-family: 'Academic';
+    src: url('/fonts/Neue Haas Grotesk Display/MIT-bold.ttf');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: 'Academic';
+    src: url('/fonts/Neue Haas Grotesk Display/MIT-italic.ttf');
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Academic';
+    src: url('/fonts/Neue Haas Grotesk Display/MIT-bold-italic.ttf');
+    font-style: italic;
+    font-weight: bold;
+}
+
 #hero{
   background: black;
   background-size:cover;
   position:relative;
   height:100vh;
-  font-family: 'Menlo', sans-serif;
+  font-family: 'Academic', 'Menlo', sans-serif;
 }
 
 .header{
@@ -26,7 +50,7 @@ html, body{ margin:0px 0px; width: 100%;}
 
 .lead {
   font-size: 17pt;
-  font-family: 'Menlo', sans-serif;
+  font-family: 'Academic', 'Menlo', sans-serif;
   font-weight: 300!important;
   color: grey!important;
   line-height: 130%!important;
@@ -44,6 +68,16 @@ a {
 
 a:hover {
   color: rgb(0, 176, 214)!important;
+}
+
+#gameField {
+    font-size: 17pt;
+    background: transparent;
+    border: 0;
+    border-bottom: 4px solid white;
+    font-weight: bold;
+    color: white;
+    padding: 5px;
 }
 
 
