@@ -85,7 +85,10 @@ function vocabContains(word) {
 
 // Handle player turns
 function turn() {
-    if (score($(GAMEFIELD).val())) gameOver();
+    if (score($(GAMEFIELD).val())) {
+	gameOver();
+	return;
+    }
     
     PLAYER_TURN = !PLAYER_TURN; // rotate the board
     TURNS_PLAYED += 1;
@@ -96,14 +99,20 @@ function turn() {
 	$(GAMEFIELD).prop('disabled', false);
 	$(GAMEFIELD).prop('maxlength', FIELD_LENGTH+1);
 
-	if (score($(GAMEFIELD).val())) gameOver();
+	if (score($(GAMEFIELD).val())) {
+	    gameOver();
+	    return;
+	}
     } else {
 	/* Computer's move */
 	display('Computer\'s move.', 0);
 	$(GAMEFIELD).prop('disabled', true);
 	
 	scribble(letter($(GAMEFIELD).val()), () => {
-	    if (score($(GAMEFIELD).val())) gameOver();
+	    if (score($(GAMEFIELD).val())) {
+		gameOver();
+		return;
+	    }
 	    turn();
 	});
     }
@@ -179,7 +188,10 @@ function init() {
 	    if (evt.keyCode == 13 && FIELD_LENGTH > TURNS_PLAYED) {
 		if (!verify($(GAMEFIELD).val()))
 		    return;
-		if (score($(GAMEFIELD).val())) gameOver();
+		if (score($(GAMEFIELD).val())) {
+		    gameOver();
+		    return;
+		}
 		turn();
 	    }
 	});
