@@ -24,7 +24,7 @@ html, body{ margin:0px 0px; width: 100%;}
     font-weight: bold;
 }
 
-#hero{
+#hero {
   background: black;
   background-size:cover;
   position:relative;
@@ -32,7 +32,23 @@ html, body{ margin:0px 0px; width: 100%;}
   font-family: 'Academic', 'Menlo', sans-serif;
 }
 
-.header{
+#helper {
+    font-family: 'Menlo', sans-serif;
+}
+
+.err {
+    color: rgb(235, 50, 90);
+}
+
+.ok {
+    color: white;
+}
+
+.great {
+    color: #27ae60;
+}
+
+.header {
   position:absolute;
   top:45%;
   text-align:center;
@@ -71,13 +87,14 @@ a:hover {
 }
 
 #gameField {
-    font-size: 17pt;
+    font-size: 30pt;
     background: transparent;
     border: 0;
     border-bottom: 4px solid white;
     font-weight: bold;
     color: white;
     padding: 5px;
+    text-align: center;
 }
 
 
@@ -85,5 +102,9 @@ a:hover {
   .lead {
     width: 300px;
     font-size: 11pt;
+  }
+
+  #gameField {
+      font-size: 17pt;
   }
 }
