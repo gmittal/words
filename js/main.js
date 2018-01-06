@@ -18,8 +18,12 @@ function reset() {
 }
 
 // Type something into the textbox
-function scribble(text) {
-    $(GAMEFIELD).val(`${$(GAMEFIELD).val()}${text}`);
+function scribble(text, callback) {
+    setTimeout(() => {
+	$(GAMEFIELD).val(`${$(GAMEFIELD).val()}${text}`);
+	FIELD_LENGTH = $(GAMEFIELD).val().length;
+	callback();
+    }, 1000);
 }
 
 // Show a message to the user
@@ -32,18 +36,23 @@ function display(text, sentiment) {
 	$(HELPER).removeClass().addClass('ok').text(text);
 }
 
+function alphabetic(text) {
+    return /^[a-zA-Z]+$/.test(text);
+}
+
 // Verify strings typed into textbox
 function verify(text) {
-    if (text.length == 0) {
-	display('Your move. Type a letter.', 0);
+    valid = true;
+    if (text.length == 0)
 	return;
-    }
-
     /* Check if string passes and react */
-    if (/^[a-zA-Z]+$/.test(text))
+    if (alphabetic(text)) {
 	display('Your move. Type a letter.', 0);
-    else
+    } else {
 	display('Invalid character.', -1);
+	valid = false;
+    }
+    return valid;
 }
 
 // Given a string, return word candidates
@@ -52,17 +61,37 @@ function candidates(text) {
     return VOCAB.filter(word => word.substring(0, query.length) == query)
 }
 
+// Return the most likely letter given string
+function letter(text) {
+    words = candidates(text);
+    chars = words.map(word => word.substring(text.length, text.length+1));
+    chars = chars.filter(l => alphabetic(l));
+    return chars[Math.floor(Math.random()*chars.length)];
+}
+
+// Is a word a real word?
+function vocabContains(word) {
+    return VOCAB.indexOf(word.toLowerCase()) > -1;
+}
+
 // Handle player turns
 function turn() {
     PLAYER_TURN = !PLAYER_TURN;
+    
     if (PLAYER_TURN == true) {
 	/* User's move */
-	display("Your move. Type a letter.", 0);
+	display('Your move. Type a letter.', 0);
 	$(GAMEFIELD).prop('disabled', false);
+
+	$(GAMEFIELD).prop('maxlength', FIELD_LENGTH+1);
     } else {
 	/* Computer's move */
-	display("Computer's move.", 0);
+	display('Computer\'s move.', 0);
 	$(GAMEFIELD).prop('disabled', true);
+	
+	scribble(letter($(GAMEFIELD).val()), () => {
+	    turn();
+	});
     }
 }
 
@@ -72,7 +101,7 @@ function init() {
     
     // Load all words known to man
     $.get(DICTIONARY, (data) => {
-	VOCAB = data.split('\n').map((word) => {
+	VOCAB = data.split('\r\n').map((word) => {
 	    return word.toLowerCase();
 	});
 	VOCAB.pop();
@@ -91,12 +120,14 @@ function init() {
 
 	// Add submission and verification event handlers
 	$(GAMEFIELD).keyup((evt) => {
-	    // Verify that game receives valid text
-	    verify($(GAMEFIELD).val());
-	    
 	    // Enter key is pressed
-	    if (evt.keyCode == 13)
+	    if (evt.keyCode == 13) {
+		if (!verify($(GAMEFIELD).val()))
+		    return;
 		turn();
+	    }
+	    if (evt.keyCode == 8)
+		console.log("Backspace");
 	});
     });
 }
