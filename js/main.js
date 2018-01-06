@@ -6,6 +6,7 @@ const GAMEFIELD = `#gameField`;
 const HELPER = `#helper`;
 const DICTIONARY = `data/en-US.txt`;
 let VOCAB = [];
+let MIN_VALID_WORD_LENGTH = 5;
 
 // State variables
 let FIELD_LENGTH = 0;
@@ -59,14 +60,14 @@ function verify(text) {
 
 // Given a string, return word candidates
 function candidates(text) {
-    query = text.toLowerCase();
+    let query = text.toLowerCase();
     return VOCAB.filter(word => word.substring(0, query.length) == query)
 }
 
 // Return the most likely letter given string
 function letter(text) {
-    words = candidates(text);
-    chars = words.map(word => word.substring(text.length, text.length+1));
+    let words = candidates(text);
+    let chars = words.map(word => word.substring(text.length, text.length+1));
     chars = chars.filter(l => alphabetic(l));
     return chars[Math.floor(Math.random()*chars.length)];
 }
@@ -86,16 +87,42 @@ function turn() {
 	display('Your move. Type a letter.', 0);
 	$(GAMEFIELD).prop('disabled', false);
 	$(GAMEFIELD).prop('maxlength', FIELD_LENGTH+1);
-	
+
+	if (score()) return;
     } else {
 	/* Computer's move */
 	display('Computer\'s move.', 0);
 	$(GAMEFIELD).prop('disabled', true);
 	
 	scribble(letter($(GAMEFIELD).val()), () => {
+	    if (score()) return;
 	    turn();
 	});
     }
+}
+
+// Evaluate whether the game is complete
+/*
+  Rules:
+  - If a word completes on your turn, you lose.
+  - If you type a word that doesn't exist, you lose.
+  - The word cannot be shorter than MIN_VALID_WORD_LENGTH characters.
+*/
+function score() {
+    let gameOver = false;
+    let text = $(GAMEFIELD).val();
+
+    if (text.length < MIN_VALID_WORD_LENGTH) return gameOver;
+    
+    if (vocabContains(text) || candidates(text).length == 0) {
+	gameOver = true;
+	if (PLAYER_TURN)
+	    display("You lose.", -1);
+	else
+	    display("You win.", 1);
+    }
+   
+    return gameOver;
 }
 
 // Setup the game board
@@ -120,7 +147,7 @@ function init() {
 		    $(GAMEFIELD).prop('maxlength', FIELD_LENGTH);
 	    }
 
-	    // Prevent backspace
+	    // Prevent backspace of played characters
 	    if (evt.keyCode == 8) {
 		if ($(GAMEFIELD).val().length >= TURNS_PLAYED+1)
 		    return
@@ -134,6 +161,7 @@ function init() {
 	$(GAMEFIELD).keyup((evt) => {
 	    // Enter key is pressed
 	    if (evt.keyCode == 13) {
+		if (score()) return;
 		if (!verify($(GAMEFIELD).val()))
 		    return;
 		turn();
