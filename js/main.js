@@ -20,6 +20,12 @@ function reset() {
     TURNS_PLAYED = 0;
 }
 
+// Game over.
+function gameOver() {
+    $(GAMEFIELD).prop('disabled', true);
+    reset();
+}
+
 // Type something into the textbox
 function scribble(text, callback) {
     setTimeout(() => {
@@ -45,7 +51,7 @@ function alphabetic(text) {
 
 // Verify strings typed into textbox
 function verify(text) {
-    valid = true;
+    let valid = true;
     if (text.length == 0)
 	return;
     /* Check if string passes and react */
@@ -79,9 +85,9 @@ function vocabContains(word) {
 
 // Handle player turns
 function turn() {
-    if (score($(GAMEFIELD).val())) return 0;
+    if (score($(GAMEFIELD).val())) gameOver();
     
-    PLAYER_TURN = !PLAYER_TURN;
+    PLAYER_TURN = !PLAYER_TURN; // rotate the board
     TURNS_PLAYED += 1;
     
     if (PLAYER_TURN == true) {
@@ -90,14 +96,14 @@ function turn() {
 	$(GAMEFIELD).prop('disabled', false);
 	$(GAMEFIELD).prop('maxlength', FIELD_LENGTH+1);
 
-	if (score($(GAMEFIELD).val())) return 0;
+	if (score($(GAMEFIELD).val())) gameOver();
     } else {
 	/* Computer's move */
 	display('Computer\'s move.', 0);
 	$(GAMEFIELD).prop('disabled', true);
 	
 	scribble(letter($(GAMEFIELD).val()), () => {
-	    if (score($(GAMEFIELD).val())) return 0;
+	    if (score($(GAMEFIELD).val())) gameOver();
 	    turn();
 	});
     }
@@ -111,7 +117,7 @@ function turn() {
   - The word cannot be shorter than MIN_VALID_WORD_LENGTH characters.
 */
 function score(text) {
-    let gameOver = false;
+    let game_over = false;
 
     if (text.length < MIN_VALID_WORD_LENGTH) {
 	if (typeof letter(text) == "undefined") {
@@ -125,14 +131,14 @@ function score(text) {
     }
     
     if (vocabContains(text) || candidates(text).length == 0) {
-	gameOver = true;
+	game_over = true;
 	if (PLAYER_TURN)
 	    display("You lose.", -1);
 	else
 	    display("You win.", 1);
     }
    
-    return gameOver;
+    return game_over;
 }
 
 // Setup the game board
@@ -173,7 +179,7 @@ function init() {
 	    if (evt.keyCode == 13 && FIELD_LENGTH > TURNS_PLAYED) {
 		if (!verify($(GAMEFIELD).val()))
 		    return;
-		if (score($(GAMEFIELD).val())) return 0;
+		if (score($(GAMEFIELD).val())) gameOver();
 		turn();
 	    }
 	});
