@@ -95,10 +95,17 @@ a:hover {
     color: white;
     padding: 5px;
     text-align: center;
+    text-transform: lowercase;
+}
+
+#gameField:disabled {
+    outline: none;
+    color: white;
 }
 
 #gameField:focus {
     outline: none;
+    color: white;
 }
 
 
