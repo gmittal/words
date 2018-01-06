@@ -10,11 +10,13 @@ let VOCAB = [];
 // State variables
 let FIELD_LENGTH = 0;
 let PLAYER_TURN = true;
+let TURNS_PLAYED = 0;
 
 // Reset state variables
 function reset() {
     FIELD_LENGTH = 0;
     PLAYER_TURN = true;
+    TURNS_PLAYED = 0;
 }
 
 // Type something into the textbox
@@ -77,13 +79,14 @@ function vocabContains(word) {
 // Handle player turns
 function turn() {
     PLAYER_TURN = !PLAYER_TURN;
+    TURNS_PLAYED += 1;
     
     if (PLAYER_TURN == true) {
 	/* User's move */
 	display('Your move. Type a letter.', 0);
 	$(GAMEFIELD).prop('disabled', false);
-
 	$(GAMEFIELD).prop('maxlength', FIELD_LENGTH+1);
+	
     } else {
 	/* Computer's move */
 	display('Computer\'s move.', 0);
@@ -107,7 +110,7 @@ function init() {
 	VOCAB.pop();
 
 	// Add typing event handlers
-	$(GAMEFIELD).keydown(() => {
+	$(GAMEFIELD).keydown((evt) => {
 	    let LAST = FIELD_LENGTH; 
 	    FIELD_LENGTH = $(GAMEFIELD).val().length;
 	    
@@ -115,6 +118,15 @@ function init() {
 	    if (FIELD_LENGTH > LAST) {
 		if (FIELD_LENGTH != 0)
 		    $(GAMEFIELD).prop('maxlength', FIELD_LENGTH);
+	    }
+
+	    // Prevent backspace
+	    if (evt.keyCode == 8) {
+		if ($(GAMEFIELD).val().length >= TURNS_PLAYED+1)
+		    return
+		else {
+		    return evt.keyCode != 8;
+		}
 	    }
 	});
 
@@ -126,8 +138,6 @@ function init() {
 		    return;
 		turn();
 	    }
-	    if (evt.keyCode == 8)
-		console.log("Backspace");
 	});
     });
 }
