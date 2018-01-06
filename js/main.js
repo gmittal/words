@@ -160,7 +160,7 @@ function init() {
 	// Add submission and verification event handlers
 	$(GAMEFIELD).keyup((evt) => {
 	    // Enter key is pressed
-	    if (evt.keyCode == 13) {
+	    if (evt.keyCode == 13 && FIELD_LENGTH > TURNS_PLAYED) {
 		if (score()) return;
 		if (!verify($(GAMEFIELD).val()))
 		    return;
