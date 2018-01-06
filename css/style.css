@@ -97,6 +97,10 @@ a:hover {
     text-align: center;
 }
 
+#gameField:focus {
+    outline: none;
+}
+
 
 @media only screen and (max-width: 500px) {
   .lead {

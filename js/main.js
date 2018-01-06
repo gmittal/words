@@ -6,7 +6,7 @@ const GAMEFIELD = `#gameField`;
 const HELPER = `#helper`;
 const DICTIONARY = `data/en-US.txt`;
 let VOCAB = [];
-let MIN_VALID_WORD_LENGTH = 5;
+const MIN_VALID_WORD_LENGTH = 5;
 
 // State variables
 let FIELD_LENGTH = 0;
@@ -79,6 +79,8 @@ function vocabContains(word) {
 
 // Handle player turns
 function turn() {
+    if (score($(GAMEFIELD).val())) return 0;
+    
     PLAYER_TURN = !PLAYER_TURN;
     TURNS_PLAYED += 1;
     
@@ -88,14 +90,14 @@ function turn() {
 	$(GAMEFIELD).prop('disabled', false);
 	$(GAMEFIELD).prop('maxlength', FIELD_LENGTH+1);
 
-	if (score()) return;
+	if (score($(GAMEFIELD).val())) return 0;
     } else {
 	/* Computer's move */
 	display('Computer\'s move.', 0);
 	$(GAMEFIELD).prop('disabled', true);
 	
 	scribble(letter($(GAMEFIELD).val()), () => {
-	    if (score()) return;
+	    if (score($(GAMEFIELD).val())) return 0;
 	    turn();
 	});
     }
@@ -108,11 +110,19 @@ function turn() {
   - If you type a word that doesn't exist, you lose.
   - The word cannot be shorter than MIN_VALID_WORD_LENGTH characters.
 */
-function score() {
+function score(text) {
     let gameOver = false;
-    let text = $(GAMEFIELD).val();
 
-    if (text.length < MIN_VALID_WORD_LENGTH) return gameOver;
+    if (text.length < MIN_VALID_WORD_LENGTH) {
+	if (typeof letter(text) == "undefined") {
+	    if (PLAYER_TURN)
+		display("You lose.", -1);
+	    else
+		display("You win.", 1);
+	    return true;
+	} else
+	    return false;
+    }
     
     if (vocabContains(text) || candidates(text).length == 0) {
 	gameOver = true;
@@ -161,9 +171,9 @@ function init() {
 	$(GAMEFIELD).keyup((evt) => {
 	    // Enter key is pressed
 	    if (evt.keyCode == 13 && FIELD_LENGTH > TURNS_PLAYED) {
-		if (score()) return;
 		if (!verify($(GAMEFIELD).val()))
 		    return;
+		if (score($(GAMEFIELD).val())) return 0;
 		turn();
 	    }
 	});
